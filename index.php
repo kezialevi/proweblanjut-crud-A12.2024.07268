@@ -51,10 +51,10 @@ if (isset($_GET['keyword'])) {
                     </a>
                 </td>
             </tr>
-        <?php
+<?php
         }
     } else {
-        ?>
+?>
         <tr>
             <td colspan="9" style="text-align:center;padding:40px">
                 Data tidak ditemukan
@@ -78,6 +78,7 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Inventaris</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
             --primary: #a855f7;
@@ -100,10 +101,30 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 15px 40px;
             color: white;
             display: flex;
+            justify-content: space-between; /* ✅ supaya kiri-kanan */
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
             align-items: center;
             gap: 10px;
             font-weight: bold;
             font-size: 18px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.35);
         }
 
         .container {
@@ -220,7 +241,13 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
     <div class="navbar">
-        <i class="fas fa-box-open"></i> Sistem Inventaris
+        <div class="nav-left">
+            <i class="fas fa-box-open"></i> Sistem Inventaris
+        </div>
+
+        <a href="logout.php" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
     </div>
 
     <div class="container">
@@ -255,34 +282,16 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php $no = 1; foreach ($data_barang as $barang): ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td>
-                                <span class="kode">
-                                    #<?= htmlspecialchars($barang['kode_barang']) ?>
-                                </span>
-                            </td>
-                            <td>
-                                <strong><?= htmlspecialchars($barang['nama_barang']) ?></strong>
-                            </td>
+                            <td><span class="kode">#<?= htmlspecialchars($barang['kode_barang']) ?></span></td>
+                            <td><strong><?= htmlspecialchars($barang['nama_barang']) ?></strong></td>
                             <td><?= htmlspecialchars($barang['kategori']) ?></td>
-                            <td>
-                                <span class="badge">
-                                    <?= $barang['jumlah'] ?> Unit
-                                </span>
-                            </td>
-                            <td>
-                                <span class="harga">
-                                    Rp <?= number_format($barang['harga'], 0, ',', '.') ?>
-                                </span>
-                            </td>
+                            <td><span class="badge"><?= $barang['jumlah'] ?> Unit</span></td>
+                            <td><span class="harga">Rp <?= number_format($barang['harga'], 0, ',', '.') ?></span></td>
                             <td><?= htmlspecialchars($barang['supplier']) ?></td>
                             <td><?= $barang['tanggal_masuk'] ?></td>
                             <td style="text-align:center">
-                                <a href="edit.php?id=<?= $barang['id'] ?>" class="btn edit">
-                                    <i class="fas fa-pen"></i>
-                                </a>
-                                <a href="hapus.php?id=<?= $barang['id'] ?>" class="btn delete" onclick="return confirm('Yakin hapus data?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <a href="edit.php?id=<?= $barang['id'] ?>" class="btn edit"><i class="fas fa-pen"></i></a>
+                                <a href="hapus.php?id=<?= $barang['id'] ?>" class="btn delete" onclick="return confirm('Yakin hapus data?')"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     <?php endforeach ?>
