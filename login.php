@@ -4,7 +4,6 @@ require 'koneksi.php';
 
 $error = '';
 
-// AUTO LOGIN DARI COOKIE
 if (isset($_COOKIE['login']) && isset($_COOKIE['username'])) {
     $_SESSION['login'] = true;
     $_SESSION['username'] = $_COOKIE['username'];
@@ -17,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // PAKAI PDO
     $stmt = $koneksi->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
 
@@ -27,16 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $login = false;
 
-        // ✅ 1. CEK PASSWORD HASH (user baru)
         if (password_verify($password, $user['password'])) {
             $login = true;
         } 
-        
-        // ✅ 2. CEK PASSWORD LAMA (plaintext)
+
         elseif ($password == $user['password']) {
             $login = true;
 
-            // 🔥 AUTO UPGRADE KE HASH
             $newHash = password_hash($password, PASSWORD_DEFAULT);
             $update = $koneksi->prepare("UPDATE users SET password=? WHERE id=?");
             $update->execute([$newHash, $user['id']]);
@@ -44,13 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($login) {
 
-            // SESSION
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
 
-            // COOKIE (1 jam)
             setcookie("login", "true", time() + 3600);
             setcookie("username", $user['username'], time() + 3600);
 
