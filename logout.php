@@ -1,11 +1,9 @@
 <?php
 session_start();
 
-// HAPUS SESSION
 session_unset();
 session_destroy();
 
-// HAPUS COOKIE
 setcookie("login", "", time() - 3600);
 setcookie("username", "", time() - 3600);
 ?>
