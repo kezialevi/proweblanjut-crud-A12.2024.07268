@@ -1,6 +1,11 @@
 <?php
-require 'koneksi.php';
 session_start();
+require 'koneksi.php';
+
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
