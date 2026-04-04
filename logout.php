@@ -4,8 +4,8 @@ session_start();
 session_unset();
 session_destroy();
 
-setcookie("login", "", time() - 3600);
-setcookie("username", "", time() - 3600);
+setcookie("login", "", time() - 3600, "/");
+setcookie("username", "", time() - 3600, "/");
 ?>
 
 <!DOCTYPE html>
