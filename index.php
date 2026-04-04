@@ -245,6 +245,7 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <i class="fas fa-box-open"></i> Sistem Inventaris
         </div>
 
+        <!-- ✅ tombol logout -->
         <a href="logout.php" class="logout-btn">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
