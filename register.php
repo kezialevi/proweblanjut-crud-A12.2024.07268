@@ -1,22 +1,18 @@
 <?php
-include 'koneksi.php';
+require 'koneksi.php';
 
-$success = '';
-$error   = '';
+$error = '';
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $username         = $_POST['username'];
-    $password         = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $nama_lengkap     = $_POST['nama_lengkap'];
-    $email            = $_POST['email'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $confirm  = $_POST['confirm_password'];
 
-    if ($password !== $confirm_password) {
+    if ($password !== $confirm) {
         $error = "Password tidak cocok!";
     } else {
 
-        // CEK USERNAME (PDO)
         $stmt = $koneksi->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->execute([$username]);
 
@@ -24,18 +20,13 @@ $error   = '';
             $error = "Username sudah digunakan!";
         } else {
 
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $hash = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt = $koneksi->prepare("
-                INSERT INTO users (username, password, nama_lengkap, email)
-                VALUES (?, ?, ?, ?)
-            ");
+            $stmt = $koneksi->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+            $stmt->execute([$username, $hash]);
 
-            if ($stmt->execute([$username, $hashed_password, $nama_lengkap, $email])) {
-                $success = "Pendaftaran berhasil!";
-            } else {
-                $error = "Gagal daftar!";
-            }
+            header("Location: login.php?success=1");
+            exit();
         }
     }
 }
@@ -47,6 +38,7 @@ $error   = '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+
     <style>
         * {
             margin: 0;
@@ -70,7 +62,7 @@ $error   = '';
             border-radius: 18px;
             box-shadow: 0 18px 40px rgba(236, 72, 153, 0.2);
             width: 100%;
-            max-width: 460px;
+            max-width: 420px;
             overflow: hidden;
         }
         
@@ -88,8 +80,8 @@ $error   = '';
         }
         
         .register-header p {
-            font-size: 14px;
             opacity: 0.95;
+            font-size: 14px;
         }
         
         .register-form {
@@ -103,7 +95,7 @@ $error   = '';
         
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #2d3436;
             font-weight: 600;
             font-size: 14px;
@@ -124,17 +116,6 @@ $error   = '';
             outline: none;
             background: #fff;
             box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
-        }
-        
-        .success-message {
-            background-color: #fce7f3;
-            color: #be185d;
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            border-left: 4px solid #ec4899;
-            font-size: 13px;
-            display: <?php echo $success ? 'block' : 'none'; ?>;
         }
         
         .error-message {
@@ -159,7 +140,6 @@ $error   = '';
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 6px;
             box-shadow: 0 6px 18px rgba(168, 85, 247, 0.45);
         }
         
@@ -187,19 +167,15 @@ $error   = '';
         }
     </style>
 </head>
+
 <body>
     <div class="register-container">
         <div class="register-header">
-            <h1>Buat Akun Baru</h1>
-            <p>Daftar untuk mengakses sistem</p>
+            <h1>Buat Akun</h1>
+            <p>Silakan daftar untuk melanjutkan</p>
         </div>
         
-        <form class="register-form" method="POST" action="">
-            <?php if ($success): ?>
-                <div class="success-message">
-                    <?php echo $success; ?>
-                </div>
-            <?php endif; ?>
+        <form class="register-form" method="POST">
             
             <?php if ($error): ?>
                 <div class="error-message">
@@ -208,36 +184,33 @@ $error   = '';
             <?php endif; ?>
             
             <div class="form-group">
-                <label for="nama_lengkap">Nama Lengkap</label>
-                <input type="text" id="nama_lengkap" name="nama_lengkap" required 
-                       placeholder="Masukkan nama lengkap Anda">
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required 
-                       placeholder="Masukkan email Anda">
-            </div>
-            
-            <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required 
-                       placeholder="Buat username unik">
+                <input type="text"
+                       id="username"
+                       name="username"
+                       required
+                       placeholder="Masukkan username">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required 
-                       placeholder="Buat password (min. 6 karakter)">
+                <input type="password"
+                       id="password"
+                       name="password"
+                       required
+                       placeholder="Masukkan password">
             </div>
             
             <div class="form-group">
                 <label for="confirm_password">Konfirmasi Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" required 
-                       placeholder="Ulangi password Anda">
+                <input type="password"
+                       id="confirm_password"
+                       name="confirm_password"
+                       required
+                       placeholder="Ulangi password">
             </div>
             
-            <button type="submit" class="btn-register">Daftar Sekarang</button>
+            <button type="submit" class="btn-register">Daftar</button>
             
             <div class="login-link">
                 Sudah punya akun? <a href="login.php">Login di sini</a>
