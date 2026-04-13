@@ -300,12 +300,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <input type="text" name="supplier" required
                         value="<?= htmlspecialchars($_POST['supplier'] ?? '') ?>">
                     </div>
-                </div>
+                    </div>
 
-                <div class="actions">
-                    <button type="button" class="btn batal" onclick="history.back()">Batal</button>
-                    <button type="submit" class="btn simpan">Simpan</button>
-                </div>
+                    <div class="actions">
+                        <button type="button" class="btn batal" onclick="history.back()">Batal</button>
+                        <button type="submit" class="btn simpan">Simpan</button>
+                    </div>
             </form>
         </div>
     </div>
