@@ -88,7 +88,6 @@ if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
     }
 }
 
-    // ================= UPDATE =================
     if (empty($errors)) {
 
         $update = $koneksi->prepare("
@@ -238,7 +237,6 @@ if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
             color: white;
         }
 
-        /* FILE INPUT BIAR RAPI */
         input[type="file"] {
             height: auto;
             padding: 10px;
@@ -282,7 +280,6 @@ if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
 
     <div class="modal-body">
 
-        <!-- ERROR -->
         <?php if (!empty($errors)): ?>
             <div style="background:#ffe5e5; padding:10px; border-radius:8px; color:#b30000; margin-bottom:15px;">
                 <?php foreach ($errors as $e): ?>
