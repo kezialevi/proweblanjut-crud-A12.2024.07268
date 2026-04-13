@@ -29,6 +29,16 @@ if (isset($_GET['keyword'])) {
                 <td>
                     <strong><?= htmlspecialchars($barang['nama_barang']) ?></strong>
                 </td>
+
+                <!-- ✅ TAMBAHAN GAMBAR -->
+                <td>
+                    <?php if (!empty($barang['gambar'])): ?>
+                        <img src="uploads/<?= htmlspecialchars($barang['gambar']) ?>" width="60" style="border-radius:8px;">
+                    <?php else: ?>
+                        <span style="color:#999;">Tidak ada</span>
+                    <?php endif; ?>
+                </td>
+
                 <td><?= htmlspecialchars($barang['kategori']) ?></td>
                 <td>
                     <span class="badge">
@@ -56,7 +66,7 @@ if (isset($_GET['keyword'])) {
     } else {
 ?>
         <tr>
-            <td colspan="9" style="text-align:center;padding:40px">
+            <td colspan="10" style="text-align:center;padding:40px">
                 Data tidak ditemukan
             </td>
         </tr>
@@ -101,7 +111,7 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 15px 40px;
             color: white;
             display: flex;
-            justify-content: space-between; /* ✅ supaya kiri-kanan */
+            justify-content: space-between;
             align-items: center;
         }
 
@@ -245,7 +255,6 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <i class="fas fa-box-open"></i> Sistem Inventaris
         </div>
 
-        <!-- ✅ tombol logout -->
         <a href="logout.php" class="logout-btn">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
@@ -271,6 +280,7 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th>No</th>
                         <th>Kode</th>
                         <th>Nama Barang</th>
+                        <th>Gambar</th> <!-- ✅ TAMBAHAN -->
                         <th>Kategori</th>
                         <th>Jumlah</th>
                         <th>Harga</th>
@@ -285,6 +295,16 @@ $data_barang = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= $no++ ?></td>
                             <td><span class="kode">#<?= htmlspecialchars($barang['kode_barang']) ?></span></td>
                             <td><strong><?= htmlspecialchars($barang['nama_barang']) ?></strong></td>
+
+                            <!-- ✅ TAMBAHAN GAMBAR -->
+                            <td>
+                                <?php if (!empty($barang['gambar'])): ?>
+                                    <img src="uploads/<?= htmlspecialchars($barang['gambar']) ?>" width="60" style="border-radius:8px;">
+                                <?php else: ?>
+                                    <span style="color:#999;">Tidak ada</span>
+                                <?php endif; ?>
+                            </td>
+
                             <td><?= htmlspecialchars($barang['kategori']) ?></td>
                             <td><span class="badge"><?= $barang['jumlah'] ?> Unit</span></td>
                             <td><span class="harga">Rp <?= number_format($barang['harga'], 0, ',', '.') ?></span></td>
