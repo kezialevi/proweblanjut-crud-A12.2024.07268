@@ -237,7 +237,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </style>
 </head>
 <body>
-
     <div class="modal">
         <div class="modal-header">
             <h2><i class="fas fa-plus"></i> Tambah Barang</h2>
