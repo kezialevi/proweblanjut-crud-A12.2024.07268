@@ -7,9 +7,11 @@ if (!isset($_SESSION['login'])) {
     exit();
 }
 
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
-    $kode_barang    = $_POST['kode_barang'];
+    $kode_barang    = $_POST['kode_barang'] ?? '';
     $nama_barang    = $_POST['nama_barang'];
     $kategori       = $_POST['kategori'];
     $jumlah         = $_POST['jumlah'];
@@ -17,39 +19,95 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $supplier       = $_POST['supplier'];
     $tanggal_masuk  = $_POST['tanggal_masuk'];
 
+    // ================= VALIDASI =================
+    if (empty($nama_barang)) {
+        $errors[] = "Nama barang wajib diisi!";
+    }
+
+    if (!is_numeric($jumlah) || $jumlah < 0) {
+        $errors[] = "Jumlah harus angka dan tidak boleh negatif!";
+    }
+
+    if (!is_numeric($harga) || $harga < 0) {
+        $errors[] = "Harga harus angka dan tidak boleh negatif!";
+    }
+
+    if (empty($supplier)) {
+        $errors[] = "Supplier wajib diisi!";
+    }
+
+    // ================= AUTO KODE =================
     if (empty($kode_barang)) {
         $prefix = "BRG";
 
-        $stmt = $koneksi->query("
+        $stmt = $koneksi->prepare("
             SELECT MAX(SUBSTRING(kode_barang,4)) as max_code
             FROM barang
-            WHERE kode_barang LIKE '$prefix%'
+            WHERE kode_barang LIKE ?
         ");
+        $stmt->execute([$prefix . "%"]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $next = ($row['max_code'] ?? 0) + 1;
         $kode_barang = $prefix . str_pad($next, 3, '0', STR_PAD_LEFT);
     }
 
-    $query = $koneksi->prepare("
-        INSERT INTO barang
-        (kode_barang, nama_barang, kategori, jumlah, harga, supplier, tanggal_masuk)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
+    // ================= UPLOAD GAMBAR =================
+    $namaFile = null;
 
-    $query->execute([
-        $kode_barang,
-        $nama_barang,
-        $kategori,
-        $jumlah,
-        $harga,
-        $supplier,
-        $tanggal_masuk
-    ]);
+    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
 
-    $_SESSION['pesan'] = "Barang berhasil ditambahkan";
-    header("Location:index.php");
-    exit();
+        $fileTmp  = $_FILES['gambar']['tmp_name'];
+        $fileName = $_FILES['gambar']['name'];
+        $fileSize = $_FILES['gambar']['size'];
+
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png'];
+
+        if (!in_array($ext, $allowed)) {
+            $errors[] = "Format gambar harus JPG/JPEG/PNG!";
+        }
+
+        if ($fileSize > 2 * 1024 * 1024) {
+            $errors[] = "Ukuran gambar maksimal 2MB!";
+        }
+
+        // VALIDASI MIME (bonus keamanan)
+        $mime = mime_content_type($fileTmp);
+        if (!in_array($mime, ['image/jpeg', 'image/png'])) {
+            $errors[] = "File harus berupa gambar valid!";
+        }
+
+        if (empty($errors)) {
+            $namaFile = uniqid() . '.' . $ext;
+            move_uploaded_file($fileTmp, "uploads/" . $namaFile);
+        }
+    }
+
+    // ================= INSERT =================
+    if (empty($errors)) {
+
+        $query = $koneksi->prepare("
+            INSERT INTO barang 
+            (kode_barang, nama_barang, kategori, jumlah, harga, supplier, tanggal_masuk, gambar)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+
+        $query->execute([
+            $kode_barang,
+            $nama_barang,
+            $kategori,
+            $jumlah,
+            $harga,
+            $supplier,
+            $tanggal_masuk,
+            $namaFile
+        ]);
+
+        $_SESSION['pesan'] = "Barang berhasil ditambahkan";
+        header("Location:index.php");
+        exit();
+    }
 }
 ?>
 
@@ -155,6 +213,32 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             background: linear-gradient(90deg, #a855f7, #ec4899);
             color: white;
         }
+
+        input[type="file"] {
+            height: auto;
+            padding: 10px;
+            background: #fde7f3;
+            border: 1px solid #f0b3dd;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"] {
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -165,41 +249,62 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
 
         <div class="modal-body">
-            <form method="POST">
+
+            <!-- ERROR -->
+            <?php if (!empty($errors)): ?>
+                <div style="background:#ffe5e5; padding:10px; border-radius:8px; color:#b30000; margin-bottom:15px;">
+                    <?php foreach ($errors as $e): ?>
+                        <p><?= htmlspecialchars($e) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST" enctype="multipart/form-data">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Kode Barang</label>
-                        <input type="text" name="kode_barang" placeholder="Kosongkan untuk otomatis">
+                        <input type="text" name="kode_barang" placeholder="Kosongkan untuk otomatis"
+                        value="<?= htmlspecialchars($_POST['kode_barang'] ?? '') ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Kategori</label>
-                        <input type="text" name="kategori" required>
+                        <input type="text" name="kategori" required
+                        value="<?= htmlspecialchars($_POST['kategori'] ?? '') ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Nama Barang</label>
-                        <input type="text" name="nama_barang" required>
+                        <input type="text" name="nama_barang" required
+                        value="<?= htmlspecialchars($_POST['nama_barang'] ?? '') ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Jumlah</label>
-                        <input type="number" name="jumlah" required>
+                        <input type="number" name="jumlah" required
+                        value="<?= htmlspecialchars($_POST['jumlah'] ?? '') ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Harga</label>
-                        <input type="number" name="harga" required>
+                        <input type="number" name="harga" required
+                        value="<?= htmlspecialchars($_POST['harga'] ?? '') ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Tanggal Masuk</label>
-                        <input type="date" name="tanggal_masuk" value="<?= date('Y-m-d') ?>">
+                        <input type="date" name="tanggal_masuk" value="<?= $_POST['tanggal_masuk'] ?? date('Y-m-d') ?>">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Gambar</label>
+                        <input type="file" name="gambar">
                     </div>
 
                     <div class="form-group full">
                         <label>Supplier</label>
-                        <input type="text" name="supplier" required>
+                        <input type="text" name="supplier" required
+                        value="<?= htmlspecialchars($_POST['supplier'] ?? '') ?>">
                     </div>
                 </div>
 
