@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $supplier       = $_POST['supplier'];
     $tanggal_masuk  = $_POST['tanggal_masuk'];
 
-    // ================= VALIDASI =================
     if (empty($nama_barang)) {
         $errors[] = "Nama barang wajib diisi!";
     }
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // ================= UPLOAD GAMBAR =================
-$namaFile = $barang['gambar']; // default gambar lama
+$namaFile = $barang['gambar'];
 
 if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
 
@@ -338,12 +337,12 @@ if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
                     value="<?= htmlspecialchars($_POST['supplier'] ?? $barang['supplier']) ?>" required>
                 </div>
 
-            </div>
+                </div>
 
-            <div class="actions">
-                <button type="button" class="btn batal" onclick="history.back()">Batal</button>
-                <button type="submit" class="btn update">Update</button>
-            </div>
+                <div class="actions">
+                    <button type="button" class="btn batal" onclick="history.back()">Batal</button>
+                    <button type="submit" class="btn update">Update</button>
+                </div>
         </form>
     </div>
 </div>
