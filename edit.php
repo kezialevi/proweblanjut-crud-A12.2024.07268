@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $errors[] = "Supplier wajib diisi!";
     }
 
-    // ================= UPLOAD GAMBAR =================
 $namaFile = $barang['gambar'];
 
 if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
