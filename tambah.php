@@ -72,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $errors[] = "Ukuran gambar maksimal 2MB!";
         }
 
-        // VALIDASI MIME (bonus keamanan)
         $mime = mime_content_type($fileTmp);
         if (!in_array($mime, ['image/jpeg', 'image/png'])) {
             $errors[] = "File harus berupa gambar valid!";
@@ -84,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
     }
 
-    // ================= INSERT =================
     if (empty($errors)) {
 
         $query = $koneksi->prepare("
@@ -250,7 +248,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         <div class="modal-body">
 
-            <!-- ERROR -->
             <?php if (!empty($errors)): ?>
                 <div style="background:#ffe5e5; padding:10px; border-radius:8px; color:#b30000; margin-bottom:15px;">
                     <?php foreach ($errors as $e): ?>
