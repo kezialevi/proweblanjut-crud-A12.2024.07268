@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $supplier       = $_POST['supplier'];
     $tanggal_masuk  = $_POST['tanggal_masuk'];
 
-    // ================= VALIDASI =================
     if (empty($nama_barang)) {
         $errors[] = "Nama barang wajib diisi!";
     }
@@ -36,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $errors[] = "Supplier wajib diisi!";
     }
 
-    // ================= AUTO KODE =================
     if (empty($kode_barang)) {
         $prefix = "BRG";
 
@@ -52,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $kode_barang = $prefix . str_pad($next, 3, '0', STR_PAD_LEFT);
     }
 
-    // ================= UPLOAD GAMBAR =================
     $namaFile = null;
 
     if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
