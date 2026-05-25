@@ -22,7 +22,6 @@ class BarangModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ================= SEARCH =================
     public function search($keyword)
     {
         $sql = "SELECT * FROM barang
