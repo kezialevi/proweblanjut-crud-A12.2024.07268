@@ -3,7 +3,7 @@
 class Database {
 
     private $host = "localhost";
-    private $db   = "proweblanjut-crud-A12.2024.07268";
+    private $db   = "inventaris_db";
     private $user = "root";
     private $pass = "";
 
