@@ -25,7 +25,6 @@ if (empty($data['kode_barang'])) {
 $result = $model->save($data);
 
 if ($result) {
-
     echo json_encode([
         "status" => true,
         "message" => "Barang berhasil ditambahkan"
