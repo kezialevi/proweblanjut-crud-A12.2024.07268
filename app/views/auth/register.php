@@ -1,3 +1,7 @@
+<?php
+$error = $error ?? '';
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -16,7 +20,6 @@ content="width=device-width, initial-scale=1.0">
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
     font-family:
     'Segoe UI',
     Tahoma,
@@ -26,7 +29,6 @@ content="width=device-width, initial-scale=1.0">
 }
 
 body {
-
     background:
     linear-gradient(
         135deg,
@@ -235,7 +237,7 @@ body {
         action="index.php?action=register"
     >
 
-        <?php if ($error): ?>
+        <?php if (!empty($error)): ?>
 
             <div class="error-message">
 
@@ -289,9 +291,7 @@ body {
             type="submit"
             class="btn-register"
         >
-
             Daftar
-
         </button>
 
         <div class="login-link">
@@ -299,9 +299,7 @@ body {
             Sudah punya akun?
 
             <a href="index.php?action=login">
-
                 Login di sini
-
             </a>
 
         </div>
