@@ -17,9 +17,7 @@ class BarangController {
     public function register()
     {
         if (isset($_SESSION['login'])) {
-
             header("Location: index.php");
-
             exit();
         }
 
@@ -28,11 +26,8 @@ class BarangController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $username = trim($_POST['username']);
-
             $password = $_POST['password'];
-
-            $confirm =
-            $_POST['confirm_password'];
+            $confirm = $_POST['confirm_password'];
 
             // VALIDASI
             if (empty($username)) {
@@ -122,9 +117,7 @@ class BarangController {
     {
         // SUDAH LOGIN
         if (isset($_SESSION['login'])) {
-
             header("Location: index.php");
-
             exit();
         }
 
@@ -160,7 +153,6 @@ class BarangController {
             isset($_POST['remember']);
 
             $database = new Database();
-
             $db = $database->conn;
 
             $stmt = $db->prepare("
@@ -189,32 +181,6 @@ class BarangController {
                     $login = true;
                 }
 
-                // PASSWORD LAMA
-                elseif (
-                    $password ==
-                    $user['password']
-                ) {
-
-                    $login = true;
-
-                    $newHash =
-                    password_hash(
-                        $password,
-                        PASSWORD_DEFAULT
-                    );
-
-                    $update = $db->prepare("
-                        UPDATE users
-                        SET password=?
-                        WHERE id=?
-                    ");
-
-                    $update->execute([
-                        $newHash,
-                        $user['id']
-                    ]);
-                }
-
                 // LOGIN BERHASIL
                 if ($login) {
 
@@ -225,9 +191,6 @@ class BarangController {
 
                     $_SESSION['username'] =
                     $user['username'];
-
-                    $_SESSION['nama_lengkap'] =
-                    $user['nama_lengkap'];
 
                     // REMEMBER ME
                     if ($remember) {
